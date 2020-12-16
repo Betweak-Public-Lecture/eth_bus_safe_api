@@ -33,19 +33,20 @@ router.post('/', (req, res)=>{
 })
 
 // /api/user/login  POST  ==> 로그인
-
 router.post('/login', (req, res)=>{
   const {post_id, password} = req.body;
-  const sql = "SELECT * FROM `user_list` WHERE `post_id`=?, `password`=?";
+  console.log(req.body)
+  const sql = "SELECT * FROM `user_list` WHERE `post_id`=? AND `password`=?";
   db.query(sql, [post_id, password], (err, result)=>{
-
     if(err){
+      console.log(result)
       res.json({
         status: "Error"
       })
     } 
     else{
       if (result.length >= 1){
+        req.session.user = result[0];
         res.json({
           status: "Success",
           result: "로그인 완료"
@@ -59,7 +60,9 @@ router.post('/login', (req, res)=>{
       }
     }
   });
-})
+});
+
+
 
 
 module.exports = router;
