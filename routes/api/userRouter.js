@@ -46,10 +46,16 @@ router.post('/login', (req, res)=>{
     } 
     else{
       if (result.length >= 1){
+        // 로그인 성공시
         req.session.user = result[0];
         res.json({
           status: "Success",
-          result: "로그인 완료"
+          result: {
+            post_id: result[0].post_id,
+            linkcode: result[0].linkcode,
+            division: result[0].division,
+            name: result[0].name
+          }
         })
       } 
       else{
