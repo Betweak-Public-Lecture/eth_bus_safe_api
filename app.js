@@ -27,11 +27,33 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use('/users', usersRouter);
 
 // MiddleWare
+
+// Memory 기반 세션
+// app.use(
+//   session({
+//     secret: "ether",
+//     resave: false,
+//     saveUninitialized: true,
+//   })
+// );
+
+// Database 기반 세션 (Persistent Session)
+const MySQLStore = require('express-mysql-session')(session);
+const mySqlOptions = {
+  host: "localhost", // db가 위차한 host(ip 주소)
+  port: "3306", // db에 접근할 수 있는 port
+  user: 'root', // database user
+  password: 'admin1234', // user pwd 
+  database: 'bus_safe' // db이름
+}
+const sessionStore = new MySQLStore(mySqlOptions);
+
 app.use(
   session({
     secret: "ether",
-    resave: false,
+    resave: true,
     saveUninitialized: true,
+    store: sessionStore
   })
 );
 
