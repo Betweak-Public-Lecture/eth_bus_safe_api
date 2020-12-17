@@ -30,6 +30,22 @@ router.get('/:carId', function(req, res){
   const sql = 'SELECT * FROM car_list WHERE car_id=?';
   const carId = req.params.carId;
 
+  const user = req.session.user;
+  if (!user){
+    // 로그인 여부
+    return res.json({
+      status: "Fail",
+      result: "로그인이 필요합니다."
+    })
+  }
+  if (user.linkcode !== 0){
+    // master 여부
+    return res.json({
+      status: "Fail",
+      result: "권한이 없습니다."
+    })
+  }
+
   db.query(sql, [carId], (err, rows)=>{
     if(err){
       res.json({
