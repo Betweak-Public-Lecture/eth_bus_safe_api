@@ -34,34 +34,38 @@ smartContract.methods.TotalCount().call().then(count =>{
   console.log(count);
 })
 
+
+
 // 리스트 조회
 /// 문제 생길 여지 있음. (비동기 함수. (then, async-await))
-router.get('/', (req, res)=>{
-  let resultData = [];
-  smartContract.methods.TotalCount().call().then(count =>{
-    for(let i=0; i< count; i++){
-      smartContract.methods.GetCheck(i).call().then(result =>{
-        // result: checker, car_id, check_res, check_etc, checks[_index].check_time]
-        resultData.push(result);
-      })
-    }
-  })
-  return res.json({
-    status: "Success",
-    result: resultData
-  })
-})
+// router.get('/', (req, res)=>{
+//   let resultData = [];
+//   smartContract.methods.TotalCount().call().then(count =>{
+//     for(let i=0; i< count; i++){
+//       smartContract.methods.GetCheck(i).call().then(result =>{
+//         // result: checker, car_id, check_res, check_etc, checks[_index].check_time]
+//         resultData.push(result);
+//       })
+//     }
+//   })
+//   return res.json({
+//     status: "Success",
+//     result: resultData
+//   })
+// })
 
 router.post('/:carId', (req, res)=>{
   const carId = req.params.carId;
-  const {check1, check2, check3, check4, check5, check_etc} = req.body;
+  let {check1, check2, check3, check4, check5, check_etc} = req.body;
 
   let check_res = `${check1}:${check2}:${check3}:${check4}:${check5}`;
 
-  const today = new Date();
-  const check_time = today.getFullYear() + "-" + today.getMonth() + "-" + today.getDate();
+  console.log(req.body);
 
-  smartContract.methods.AddCheckList(carId, check_res, check_etc, parseInt(check_time)).send({
+  const today = Date.now();
+  // const today = new Date();
+  
+  smartContract.methods.AddCheckList(carId, check_res, check_etc, parseInt(today)).send({
     from: '0xebed70c19ca2cbff3294c9ac836b5f44b0834fff', // ethereum account address //server의 main address
     gas:'300000' // gas limit
   }).then((result)=>{
@@ -70,8 +74,57 @@ router.post('/:carId', (req, res)=>{
       status: "Success",
       result: result
     })
+  }).catch(err=>{
+    res.json({
+      status: "Fail",
+      result: "네트워크 오류"
+    })
   })
 })
+
+// 전체 체크리스트 확인하기
+router.get('/', (req, res)=>{
+  smartContract.methods.GetCheckAll().call().then(checklist=>{
+    console.log(checklist);
+    res.json({
+      status: "okay",
+      data: checklist
+    })
+  }).catch(err=>{
+    console.log(err);
+  })
+})
+
+// 차량별 체크리스트 확인하기
+
+
+
+// AntiPattern
+// router.get('/:carId', (req, res)=>{
+//   let resultData = []
+//   smartContract.methods.TotalCount().call().then(count=>{
+//     // 비동기
+//     for(let i=0; i<count; i++){
+//       // 비동기
+//       smartContract.methods.getCheck(i).call().then(check=>{
+//         resultData.push(check)
+//       })
+//     }
+//   })
+//   setTimeout(()=>{}, 2000)
+// });
+
+
+async function getTotalCheckList(){
+  // 순서를 보장 ==> (단점: 속도가 느립니다.)
+  const count = await smartContract.methods.TotalCount().call();
+  let resultData = []
+  for (let i=0; i<count; i++){
+    const data = await smartContract.methods.getCheck(i).call()
+    resultData.push(data);
+  }
+  return resultData;
+}
 
 
 

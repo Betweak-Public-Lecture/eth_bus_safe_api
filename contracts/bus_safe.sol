@@ -1,4 +1,5 @@
 pragma solidity >=0.4.22 <0.8.0;
+pragma experimental ABIEncoderV2;
 
 contract bus_safe {
     uint32 check_count;
@@ -63,5 +64,9 @@ contract bus_safe {
             checks[_index].check_etc,
             checks[_index].check_time
         );
+    }
+
+    function GetCheckAll() public view returns (check_list[] memory) {
+        return checks;
     }
 }

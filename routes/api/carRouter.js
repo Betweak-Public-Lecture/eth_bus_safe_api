@@ -38,13 +38,14 @@ router.get('/:carId', function(req, res){
       result: "로그인이 필요합니다."
     })
   }
-  if (user.linkcode !== 0){
-    // master 여부
-    return res.json({
-      status: "Fail",
-      result: "권한이 없습니다."
-    })
-  }
+  
+  // if (user.linkcode !== 0){
+  //   // master 여부
+  //   return res.json({
+  //     status: "Fail",
+  //     result: "권한이 없습니다."
+  //   })
+  // }
 
   db.query(sql, [carId], (err, rows)=>{
     if(err){
