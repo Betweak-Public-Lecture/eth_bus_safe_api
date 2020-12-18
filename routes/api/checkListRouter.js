@@ -87,15 +87,61 @@ router.get('/', (req, res)=>{
   smartContract.methods.GetCheckAll().call().then(checklist=>{
     console.log(checklist);
     res.json({
-      status: "okay",
-      data: checklist
+      status: "Success",
+      result: checklist
     })
   }).catch(err=>{
     console.log(err);
+    res.json({
+      status: "Fail",
+      result: "네트워크 오류"
+    })
   })
 })
 
+// {
+//   "internalType": "address",
+//   "name": "checker",
+//   "type": "address"
+// },
+// {
+//   "internalType": "string",
+//   "name": "car_id",
+//   "type": "string"
+// },
+// {
+//   "internalType": "string",
+//   "name": "check_res",
+//   "type": "string"
+// },
+// {
+//   "internalType": "string",
+//   "name": "check_etc",
+//   "type": "string"
+// },
+// {
+//   "internalType": "uint64",
+//   "name": "check_time",
+//   "type": "uint64"
+// }
+
 // 차량별 체크리스트 확인하기
+router.get('/:carId', (req, res)=>{
+  const carId = req.params.carId;
+
+  smartContract.methods.GetCheckAll().call().then(checklist=>{
+    const resultArr = []
+    for(let i=0; i<checklist.length; i++){
+      if(checklist[i][1] === carId){
+        resultArr.push(checklist[i])
+      }
+    }
+    res.json({
+      status: "Success",
+      result: resultArr
+    })
+  })
+})
 
 
 
