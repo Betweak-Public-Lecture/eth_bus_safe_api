@@ -54,20 +54,41 @@ smartContract.methods.TotalCount().call().then(count =>{
 //   })
 // })
 
+router.get('/problem', (req, res)=>{
+  const sql = "SELECT * FROM checklist";
+  db.query(sql, (err, rows)=>{
+    return res.json({ 
+      status: "Success",
+      result: rows
+    })
+  })
+});
+
 router.post('/:carId', (req, res)=>{
   const carId = req.params.carId;
   let {check1, check2, check3, check4, check5, check_etc} = req.body;
 
-  let check_res = `${check1}:${check2}:${check3}:${check4}:${check5}`;
+  // let check_res = `${check1}:${check2}:${check3}:${check4}:${check5}`;
+  
+  let check_res = []
+  for(let i=0; i<(Object.keys(req.body).length -1); i++){
+    const {title, answer} = req.body[`check${i+1}`];
+    check_res.push({
+      title: title,
+      answer:answer
+    })
+    console.log(check_res)
+  }
+  check_res = JSON.stringify(check_res)
 
-  console.log(req.body);
+  console.log(check_res);
 
   const today = Date.now();
   // const today = new Date();
   
   smartContract.methods.AddCheckList(carId, check_res, check_etc, parseInt(today)).send({
     from: '0xebed70c19ca2cbff3294c9ac836b5f44b0834fff', // ethereum account address //server의 main address
-    gas:'300000' // gas limit
+    gas:'3000000' // gas limit
   }).then((result)=>{
     console.log(result);
     res.json({
@@ -75,6 +96,7 @@ router.post('/:carId', (req, res)=>{
       result: result
     })
   }).catch(err=>{
+    console.log(err)
     res.json({
       status: "Fail",
       result: "네트워크 오류"
