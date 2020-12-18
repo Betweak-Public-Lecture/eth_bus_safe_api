@@ -20,6 +20,7 @@
     "moment-timezone": "^0.5.31",
     "morgan": "~1.9.1",
     "mysql2": "^2.1.0",
+    "node-fetch": "^2.6.1",
     "truffle": "^5.1.55",
     "web3": "^1.2.11"
   },

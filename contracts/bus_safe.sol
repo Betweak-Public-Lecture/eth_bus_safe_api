@@ -21,6 +21,7 @@ contract bus_safe {
 
     check_list[] public checks;
 
+    // CheckList(점검표) 추가
     function AddCheckList(
         string memory _car_id,
         string memory _check_res,
@@ -35,11 +36,16 @@ contract bus_safe {
         emit AddCheck(_checker, _car_id, _check_res, _check_etc, _check_time);
     }
 
+    // CheckList(점검표) 총 개수
     function TotalCount() public view returns (uint32) {
         return check_count;
     }
 
-    function GetCheck(uint256 _index)
+    // 단일 CheckList 별로 상세조회
+    // uint32  unsignedInteger(부호없는 정수) 32bit   ==> 2^32 [0 ~ 2^32-1]
+    // uint256 unsignedInteger(부호없는 정수) 256bit  ==> 2^256 [0 ~ 2^256 -1]
+    //
+    function GetCheck(uint32 _index)
         public
         view
         returns (
@@ -58,8 +64,4 @@ contract bus_safe {
             checks[_index].check_time
         );
     }
-
-    // function GetCheck(uint _index) public view returns(address){
-    //     return checks[_index].checker;
-    // }
 }
